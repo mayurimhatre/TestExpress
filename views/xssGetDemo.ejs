@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<div> This XSS attack demo page on Express!!!! </div>
+
+<% if (tagline) {%>
+    <input type="hidden" name="tagline" value=<%- tagline %>
+<% } %>
+
+</body>
+</html>
