@@ -1,0 +1,30 @@
+pipeline {
+    agent { 
+        docker { 
+            image 'node:9'
+            args '-u 0:0'
+        }
+    }
+    environment {
+        NODE_PATH = '/home/mhama02/Documents/Hailstone/out/agent/nodejs'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Test'){
+            steps {
+                wrap([$class: 'HailstoneBuildWrapper', location: 'localhost', port: '10010']) {
+                    sh "npm test"
+                }
+            }
+        }
+        stage('Deploy') { 
+            steps {
+                sh 'echo npm package would run here...'
+            }
+        }
+    }
+}
