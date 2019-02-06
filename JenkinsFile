@@ -5,6 +5,10 @@ pipeline {
             args '-u 0:0'
         }
     }
+    environment {
+        NODE_PATH = '/srv/iast-agent'
+        IASTAGENT_REMOTE_ENDPOINT_HTTP_ENABLED = 'true'
+    }
     stages {
         stage('Build') {
             steps {
@@ -13,8 +17,21 @@ pipeline {
         }
         stage('Test'){
             steps {
+                // echo sh(returnStdout: true, script: 'env')
+                script {
+                    def agentPath = "${NODE_PATH}/agent_nodejs_linux64.node"
+                    dir("${NODE_PATH}") {
+                        if (fileExists("agent_nodejs_linux64.node")) {
+                        echo "Using Agent: ${agentPath}"
+                        } else {
+                        echo "ERROR: Agent cannot be found at: ${agentPath}"
+                        }
+                    }
+                }
+                sh 'pwd'
+                echo sh(returnStdout: true, script: 'env')
                 wrap([$class: 'HailstoneBuildWrapper', location: 'localhost', port: '10010']) {
-                    sh "npm test"
+                    sh 'npm -r agent_nodejs_linux64 test'
                 }
             }
         }
